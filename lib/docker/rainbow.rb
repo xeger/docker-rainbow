@@ -38,6 +38,11 @@ module Docker
       output.split("\n")
     end
 
+    # The color of all the containers that this rainbow will name. Chosen
+    # from the palette during #initialize and does not change thereafter.
+    # @return [String]
+    attr_reader :color
+
     # @param [String] project a prefix that comes before the colors, default
     #   is none
     # @param [Array] colors a list of colors to choose from, default is the
