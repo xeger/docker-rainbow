@@ -140,7 +140,7 @@ module Docker
       words = ['docker', 'ps', '--filter=status=exited', '--format={{.ID}}']
       containers.each { |cn| words << "--filter=name=#{cn}" }
       output = self.class.shell(words.join(' '))
-      output.each { |dead| shell("docker rm #{dead}") }
+      output.each { |dead| self.class.shell("docker rm #{dead}") }
     end
 
     def find_in_use(containers)
