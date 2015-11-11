@@ -52,30 +52,31 @@ end
 ### Reusing names
 
 By default, the rainbow raises an exception if it tries to choose any name
-that is already in use by any container, running _or_ dead. Because rainbow's
-palette has just five colors, this will typically happen after just a few
+that is already in use by any container, running _or_ exited. Because rainbow's
+palette has just six colors, this will typically happen after just a few
 deploys.
 
 In most cases, by the time we wrap back around to a previous color, the original
-containers will be long dead; it's unlikely that you will have five "vintages"
-of a given service running at the same time. For this reason you can ask the
-rainbow to automatically remove dead containers with conflicting names.
+containers will have exited long ago; it's unlikely that you will have six
+"vintages" of a given service running at the same time. For this reason the
+rainbow will automatically remove exited containers with conflicting names,
+unless you specify `gc:false` when you build your rainbow.
 
 ```ruby
-  rainbow.name_containers('spotify/cassandra:latest', gc:true)
+  rainbow.name_containers('spotify/cassandra:latest', gc:false)
 ```
 
 However: if any container with a conflicting name is *still running*, this
 counts as a conflict and the rainbow will raise an exception because in all
 likelihood, something is seriously wrong with the containers deployed to this
-box. (How often would you have five different revisions of software running
+box. (How often would you have six different revisions of software running
 on one box at once time?)
 
 If you will handle naming conflicts yourself, you can ask the rainbow to ignore
-them.
+them and/or opt out of the built-in garbage collection.
 
 ```ruby
-  rainbow.name_containers('spotify/cassandra:latest', reuse: true, gc:true)
+  rainbow.name_containers('spotify/cassandra:latest', reuse:true, gc:false)
 ```
 
 ### Accounting for entrypoints
@@ -97,6 +98,16 @@ for the "role" of the container.
     # => ["blue_swarm_node_1", "blue_swarm_node_2"]
 ```
 
+We **strongly encourage** you to use a terse, meaningful description of the
+cmd instead of passing the entire command word-for-word into the rainbow. You
+might find it super interesting that you invoked busybox as `/bin/sh -c ls foo`,
+but the people who look at `docker ps` output probably don't care to see a
+container named `busybox_bin-sh-c-ls-foo`!
+
+To encourage you to choose terse names, Rainbow will extract the _first_
+alphanumeric word from the cmd and use it alone as a suffix for your container
+named. If this is an issue, refer to "Customizing Container Names", below.
+
 ### Multi-tenancy
 
 You might be deploying containers to a cluster that is in use by other tenants;
@@ -108,6 +119,29 @@ and supports an optional *project name* for all of your containers.
   rainbow = Docker::Rainbow.new(project: 'development')
 
   rainbow.name_containers('foo') # => ["development_blue_foo]
+```
+
+## Customizing Container Names
+
+If you absolutely insist on having more colors, you can pass a custom
+palette.
+
+```ruby
+  Docker::Rainbow.new(palette: ['mauve', 'pink', 'chartreuse', ...])
+```
+
+You can also subclass Rainbow and override its private methods if you want
+to be more opinionated about naming choices.
+
+```ruby
+  class PedanticRainbow < Docker::Rainbow
+    # Our full command is relevant to the container's personality; include
+    # every word, not just the first word! Also use periods to separate
+    # command words, not hyphens.
+    private def cmd_suffix(cmd)
+      cmd.split(/[^A-Za-z0-9]+/).join('.')
+    end
+  end
 ```
 
 ## Development
