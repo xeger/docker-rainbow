@@ -1,5 +1,7 @@
 require 'set'
 
+require 'active_support/core_ext/object'
+
 require 'docker/rainbow/version'
 
 module Docker
@@ -68,8 +70,10 @@ module Docker
     # @param [Boolean] gc if true rm dead containers with conflicting names
     # @param [Boolean] reuse if true, ignore conflicts with running containers
     def name_containers(image, cmd:nil, count:1, gc:true, reuse:false)
+      raise ArgumentError, "count must be > 0" unless count > 0
+
       prefix = "#{@color}_#{base_name(image)}"
-      prefix = "#{prefix}_#{cmd_suffix(cmd)}" if cmd
+      prefix = "#{prefix}_#{cmd_suffix(cmd)}" if cmd.present?
 
       result = []
       if count == 1
@@ -84,7 +88,7 @@ module Docker
 
       unless reuse
         in_use = find_in_use(result)
-        raise Conflict.new(in_use) if in_use.any?
+        raise Conflict.new(in_use) if in_use.present?
       end
 
       result
