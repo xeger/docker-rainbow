@@ -1,7 +1,5 @@
 require 'set'
 
-require 'active_support/core_ext/object'
-
 require 'docker/rainbow/version'
 
 module Docker
@@ -73,7 +71,7 @@ module Docker
       raise ArgumentError, "count must be > 0" unless count > 0
 
       prefix = "#{@color}_#{base_name(image)}"
-      prefix = "#{prefix}_#{cmd_suffix(cmd)}" if cmd.present?
+      prefix = "#{prefix}_#{cmd_suffix(cmd)}" if present?(cmd)
 
       result = []
       if count == 1
@@ -88,7 +86,7 @@ module Docker
 
       unless reuse
         in_use = find_in_use(result)
-        raise Conflict.new(in_use) if in_use.present?
+        raise Conflict.new(in_use) if present?(in_use)
       end
 
       result
@@ -151,6 +149,14 @@ module Docker
       words = ['docker', 'ps', '--format={{.Names}}']
       containers.each { |cn| words << "--filter=name=#{cn}" }
       self.class.shell(words.join(' '))
+    end
+
+    # Workalike for Object#present? but without dragging in activesupport
+    def present?(object)
+      return false if object.nil?
+      return false if object == false
+      return false if object.respond_to?(:empty?) && object.empty?
+      true
     end
   end
 end
