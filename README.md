@@ -45,7 +45,7 @@ names = rainbow.name_containers('spotify/cassandra:latest', count:3)
 
 
 names.each do |name|
-  system("docker run -n #{name} spotify/cassandra:latest")
+  system("docker run --name #{name} spotify/cassandra:latest")
 end
 ```
 
@@ -152,5 +152,5 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/docker-rainbow. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/xeger/docker-rainbow. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
 
