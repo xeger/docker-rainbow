@@ -73,7 +73,12 @@ box. (How often would you have six different revisions of software running
 on one box at once time?)
 
 If you will handle naming conflicts yourself, you can ask the rainbow to ignore
-them and/or opt out of the built-in garbage collection.
+them with `reuse:true`; rather than raising an exception for in-use names, it
+will simply return the existing names.
+
+If you use this option, then you almost certainly also want to use `gc:false`
+to prevent the rainbow from garbage-collecting dead containers whose names it
+will reuse.
 
 ```ruby
   rainbow.name_containers('spotify/cassandra:latest', reuse:true, gc:false)
