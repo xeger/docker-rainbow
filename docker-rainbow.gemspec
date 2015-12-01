@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["tony@rightscale.com"]
 
   spec.summary       = %q{An Ops-friendly container naming scheme for Docker.}
-  spec.description   = %q{Chooses terse, meaningful, unique names for containers based on base image, existing containers, and other factors.}
+  spec.description   = %q{Generates terse, meaningful, unique names for your Docker containers.}
   spec.homepage      = "https://github.com/xeger/docker-rainbow"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
