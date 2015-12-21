@@ -128,14 +128,10 @@ module Docker
       base
     end
 
-    # Transform a cmd into a valid container name fragment. Split cmd into
-    # words and return ONLY the first word.
-    # This assumes that the first word of the command is sufficient to
-    # uniquely identify the container's role, and that any remaining words are
-    # noise.
+    # Transform a cmd into a valid container name fragment. 
+    # Substitute hyphens for underscores 
     private def cmd_suffix(cmd)
-      words = cmd.split(/[^A-Za-z0-9]+/)
-      words.first
+      words = cmd.gsub(/-/,'_')
     end
 
     def remove_dead(containers)
