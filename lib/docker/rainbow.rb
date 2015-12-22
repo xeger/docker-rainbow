@@ -26,6 +26,9 @@ module Docker
     # of the world. (That's what `docker logs` is for...)
     PALETTE = ['blue', 'green', 'orange', 'red', 'yellow', 'violet'].freeze
 
+    # Pattern that matches any container name allowed by Docker.
+    VALID_NAME = /^[a-zA-Z0-9][a-zA-Z0-9_.-]+$/.freeze
+
     # Execute a shell command and return its output. If the command fails,
     # raise RuntimeError with details of the command that failed.
     # TODO use a pretty gem to do this, and/or a Ruby docker CLI wrapper
@@ -128,14 +131,17 @@ module Docker
       base
     end
 
-    # Transform a cmd into a valid container name fragment. Split cmd into
-    # words and return ONLY the first word.
-    # This assumes that the first word of the command is sufficient to
-    # uniquely identify the container's role, and that any remaining words are
-    # noise.
+    # Transform a cmd into a valid container name fragment, or use it verbatim
+    # if it is already valid.
     private def cmd_suffix(cmd)
-      words = cmd.split(/[^A-Za-z0-9]+/)
-      words.first
+      if cmd =~ VALID_NAME
+        cmd
+      else
+        mod = cmd.gsub(/\W+/,'_')
+        mod.gsub!(/^_+/, '')
+        mod.gsub!(/_+$/, '')
+        mod
+      end
     end
 
     def remove_dead(containers)
