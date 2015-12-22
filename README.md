@@ -109,9 +109,9 @@ might find it super interesting that you invoked busybox as `/bin/sh -c ls foo`,
 but the people who look at `docker ps` output probably don't care to see a
 container named `busybox_bin-sh-c-ls-foo`!
 
-To encourage you to choose terse names, Rainbow will extract the _first_
-alphanumeric word from the cmd and use it alone as a suffix for your container
-named. If this is an issue, refer to "Customizing Container Names", below.
+Although we encourage you to choose terse names, Rainbow will helpfully modify
+any value you provide with underscores in place of any non alpha-numeric value.
+If this is an issue, refer to "Customizing Container Names", below.
 
 ### Multi-tenancy
 

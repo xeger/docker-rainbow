@@ -129,9 +129,10 @@ module Docker
     end
 
     # Transform a cmd into a valid container name fragment. 
-    # Substitute hyphens for underscores 
+    # Substitute underscores for any non-alphanumeric value
     private def cmd_suffix(cmd)
-      words = cmd.gsub(/-/,'_')
+      words = cmd.gsub(/\W+/,'_')
+      words
     end
 
     def remove_dead(containers)
