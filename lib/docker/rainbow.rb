@@ -26,6 +26,10 @@ module Docker
     # of the world. (That's what `docker logs` is for...)
     PALETTE = ['blue', 'green', 'orange', 'red', 'yellow', 'violet'].freeze
 
+    # Pattern that matches useless pieces of image names, which we exclude
+    # from the resulting containers' names. _Everything_ is a service...
+    NOISE_WORDS = /[_.-]service$/.freeze
+
     # Pattern that matches any container name allowed by Docker.
     VALID_NAME = /^[a-zA-Z0-9][a-zA-Z0-9_.-]+$/.freeze
 
@@ -126,7 +130,7 @@ module Docker
       end
 
       # Strip noise-word suffixes from image name
-      base.sub!(/_service$/, '')
+      base.sub!(NOISE_WORDS, '')
 
       base
     end
@@ -151,10 +155,11 @@ module Docker
       output.each { |dead| self.class.shell("docker rm #{dead}") }
     end
 
+    # @param [Array] containers list of String container names
+    # @return [Array] subset of containers that match a running container's name
     def find_in_use(containers)
-      words = ['docker', 'ps', '--format={{.Names}}']
-      containers.each { |cn| words << "--filter=name=#{cn}" }
-      self.class.shell(words.join(' '))
+      in_use = Set.new(self.class.shell('docker ps --format={{.Names}}'))
+      containers.select { |cn| in_use.include?(cn) }
     end
 
     # Workalike for Object#present? but without dragging in activesupport
