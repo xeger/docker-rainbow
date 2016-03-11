@@ -71,6 +71,7 @@ module Docker
       raise ArgumentError, "count must be > 0" unless count > 0
 
       prefix = "#{@color}_#{base_name(image)}"
+      prefix = @prefix + prefix if @prefix
       prefix = "#{prefix}_#{cmd_suffix(cmd)}" if present?(cmd)
 
       result = []
@@ -98,9 +99,9 @@ module Docker
       all = self.class.shell("docker ps --format={{.Names}}").compact
 
       if @project
-        prefix = "#{project}_"
-        all.reject! { |n| !n.start_with?(prefix) }
-        all = all.map { |cn| cn[prefix.length..-1] }
+        @prefix = "#{@project}_"
+        all.reject! { |n| !n.start_with?(@prefix) }
+        all = all.map { |cn| cn[@prefix.length..-1] }
       end
 
       # Find colors that are in use
