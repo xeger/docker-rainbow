@@ -143,7 +143,7 @@ to be more opinionated about naming choices.
     # Our full command is relevant to the container's personality; include
     # every word, not just the first word! Also use periods to separate
     # command words, not hyphens.
-    private def cmd_suffix(cmd)
+    def cmd_suffix(cmd)
       cmd.split(/[^A-Za-z0-9]+/).join('.')
     end
   end
