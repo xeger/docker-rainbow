@@ -100,9 +100,11 @@ module Docker
       result
     end
 
+    private
+
     # Find a color that is not being used by any running container in our
     # project. If all colors are in use, return the first color in the palette.
-    private def choose_color
+    def choose_color
       all = self.class.shell("docker ps --format={{.Names}}").compact
 
       if @project
@@ -121,7 +123,7 @@ module Docker
 
     # Given an image tag, derive a meaningful but terse "base name" for
     # containers that will be launched from that image.
-    private def base_name(image)
+    def base_name(image)
       # Remove registry namespace (anything before the final slash)
       # as well as tag.
       if image.include?("/")
@@ -138,7 +140,7 @@ module Docker
 
     # Transform a cmd into a valid container name fragment, or use it verbatim
     # if it is already valid.
-    private def cmd_suffix(cmd)
+    def cmd_suffix(cmd)
       if cmd =~ VALID_NAME
         cmd
       else
